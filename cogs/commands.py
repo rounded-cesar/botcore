@@ -280,6 +280,26 @@ class CommandsCog(commands.Cog):
         
         await interaction.response.send_message(embed=embed, ephemeral=True)
 
+    @app_commands.command(name="configuracoes", description="Abre o painel de configurações do servidor")
+    @app_commands.checks.has_permissions(administrator=True)
+    async def configuracoes(self, interaction: discord.Interaction):
+        from cogs.config_views import ConfigMainView
+
+        embed = discord.Embed(
+            title="⚙️ Painel de Configurações",
+            description=(
+                "Use os botões abaixo para **visualizar ou alterar** as configurações do servidor.\n\n"
+                "🛑 *Apenas administradores podem acessar este painel.*"
+            ),
+            color=discord.Color.blurple()
+        )
+
+        await interaction.response.send_message(
+            embed=embed,
+            view=ConfigMainView(self.bot),
+            ephemeral=True
+        )
+
 
 async def setup(bot):
     await bot.add_cog(CommandsCog(bot))
