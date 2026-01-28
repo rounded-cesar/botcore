@@ -1,0 +1,198 @@
+{
+  "BARBEARIA": {
+    "max_participants": 4,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Barbearia",
+    "required_roles": true
+  },
+  "AMMUNATION": {
+    "max_participants": 3,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Ammunation",
+    "required_roles": true
+  },
+  "PLANET": {
+    "max_participants": 7,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Planet",
+    "required_roles": true
+  },
+  "COMEDY": {
+    "max_participants": 7,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Comedy",
+    "required_roles": true
+  },
+  "AUDITÓRIO": {
+    "max_participants": 8,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Auditório",
+    "required_roles": true
+  },
+  "ESTÁBULO": {
+    "max_participants": 7,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Estábulo",
+    "required_roles": true
+  },
+  "MC_DONALD'S": {
+    "max_participants": 3,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "MC Donald's",
+    "required_roles": true
+  },
+  "FAST_FOOD": {
+    "max_participants": 4,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Fast Food",
+    "required_roles": true
+  },
+  "OBSERVATÓRIO": {
+    "max_participants": 12,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Observatório",
+    "required_roles": true
+  },
+  "MERGULHADOR": {
+    "max_participants": 8,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Mergulhador",
+    "required_roles": true
+  },
+  "BEBIDAS_SAMIR": {
+    "max_participants": 4,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Bebidas Samir",
+    "required_roles": true
+  },
+  "YELLOW_JACK": {
+    "max_participants": 6,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Yellow Jack",
+    "required_roles": true
+  },
+  "HIPER_MERCADO": {
+    "max_participants": 5,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Hiper Mercado",
+    "required_roles": true
+  },
+  "CAMPO_DE_GOLF": {
+    "max_participants": 7,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Campo de Golf",
+    "required_roles": true
+  },
+  "CEMITÉRIO_DE_AVIÕES": {
+    "max_participants": 8,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Cemitério de Aviões",
+    "required_roles": true
+  },
+  "GRAPESEED": {
+    "max_participants": 6,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Grapeseed",
+    "required_roles": true
+  },
+  "BEBIDAS_LIFEINVADER": {
+    "max_participants": 6,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Bebidas Lifeinvader",
+    "required_roles": true
+  },
+  "PREFEITURA": {
+    "max_participants": 8,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Prefeitura",
+    "required_roles": true
+  },
+  "LOJINHA": {
+    "max_participants": 5,
+    "has_call_p1": false,
+    "has_call_p2": false,
+    "display_name": "Lojinha",
+    "required_roles": true
+  },
+  "JOALHERIA": {
+    "max_participants": 9,
+    "has_call_p1": true,
+    "has_call_p2": false,
+    "display_name": "Joalheria",
+    "required_roles": true
+  },
+  "AÇOUGUE": {
+    "max_participants": 11,
+    "has_call_p1": true,
+    "has_call_p2": true,
+    "display_name": "Açougue",
+    "required_roles": true
+  },
+  "BOBCAT": {
+    "max_participants": 8,
+    "has_call_p1": true,
+    "has_call_p2": true,
+    "display_name": "Bobcat",
+    "required_roles": true
+  },
+  "GALINHEIRO": {
+    "max_participants": 14,
+    "has_call_p1": true,
+    "has_call_p2": true,
+    "display_name": "Galinheiro",
+    "required_roles": true
+  },
+  "FLECCA": {
+    "max_participants": 11,
+    "has_call_p1": true,
+    "has_call_p2": false,
+    "display_name": "Banco Fleeca",
+    "required_roles": true
+  },
+  "FLECCA_LIFEINVADER": {
+    "max_participants": 11,
+    "has_call_p1": true,
+    "has_call_p2": false,
+    "display_name": "Banco Fleeca Life Invader",
+    "required_roles": true
+  },
+  "BANCO_CENTRAL": {
+    "max_participants": 14,
+    "has_call_p1": true,
+    "has_call_p2": true,
+    "display_name": "Banco Central",
+    "required_roles": true
+  },
+  "BANCO_PALETO": {
+    "max_participants": 14,
+    "has_call_p1": true,
+    "has_call_p2": false,
+    "display_name": "Banco Paleto",
+    "required_roles": true
+  },
+  "NIÓBIO": {
+    "max_participants": 20,
+    "has_call_p1": true,
+    "has_call_p2": true,
+    "display_name": "Nióbio",
+    "required_roles": true
+  }
+}
