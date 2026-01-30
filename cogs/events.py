@@ -1,6 +1,6 @@
 # cogs/events.py
-import discord # type: ignore
-from discord.ext import commands # type: ignore
+import discord
+from discord.ext import commands
 from utils import create_action_embed
 from cogs.action_views import ActionView
 
@@ -19,10 +19,6 @@ class EventsCog(commands.Cog):
         
         # Ignora mensagens do próprio bot
         if message.author == self.bot.user:
-            return
-        
-        # Ignora mensagens de bots e webhooks
-        if message.author.bot or message.webhook_id:
             return
         
         # Verifica se é no canal de ações configurado

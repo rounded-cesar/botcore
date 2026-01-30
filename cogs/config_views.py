@@ -5,11 +5,7 @@ from utils import (
     create_error_embed,
     create_config_embed
 )
-
-# =========================
-# VIEW PRINCIPAL
-# =========================
-
+    
 class ConfigMainView(View):
     def __init__(self, bot):
         super().__init__(timeout=300)

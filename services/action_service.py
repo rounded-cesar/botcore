@@ -160,7 +160,7 @@ class ActionService:
                 return False
             
             action.call_p1_id = user_id
-            action.add_participant(user_id)
+            # NÃO adiciona automaticamente aos participantes
             self.save_active_actions()
             self.save_to_history(action)
             return True
@@ -173,7 +173,7 @@ class ActionService:
                 return False
             
             action.call_p2_id = user_id
-            action.add_participant(user_id)
+            # NÃO adiciona automaticamente aos participantes
             self.save_active_actions()
             self.save_to_history(action)
             return True

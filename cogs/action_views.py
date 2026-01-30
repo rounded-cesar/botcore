@@ -455,14 +455,6 @@ class ActionView(ui.View):
             )
             return
         
-        # Não pode sair se for o escalador
-        if action.escalator_id == interaction.user.id:
-            await interaction.response.send_message(
-                embed=create_error_embed("O escalador não pode sair da ação!"),
-                ephemeral=True
-            )
-            return
-        
         # Remove participante
         success = await self.action_service.remove_participant(self.action_id, interaction.user.id)
         
@@ -522,7 +514,25 @@ class ManagementPanelView(ui.View):
         self.action_service = bot.action_service
         self.config_service = bot.config_service
     
-    @ui.button(label="➕ Adicionar Participante", style=discord.ButtonStyle.primary, row=0)
+    @ui.button(label="👤 Gerenciar Escalador", style=discord.ButtonStyle.primary, row=0)
+    async def manage_escalator(self, interaction: discord.Interaction, button: ui.Button):
+        """Gerencia o escalador"""
+        await interaction.response.send_message(
+            "Selecione uma ação:",
+            view=ManageEscalatorView(self.bot, self.action_id),
+            ephemeral=True
+        )
+    
+    @ui.button(label="📞 Gerenciar Calls", style=discord.ButtonStyle.primary, row=0)
+    async def manage_calls(self, interaction: discord.Interaction, button: ui.Button):
+        """Gerencia calls"""
+        await interaction.response.send_message(
+            "Selecione uma ação:",
+            view=ManageCallsView(self.bot, self.action_id),
+            ephemeral=True
+        )
+    
+    @ui.button(label="➕ Adicionar Participante", style=discord.ButtonStyle.primary, row=1)
     async def add_participant(self, interaction: discord.Interaction, button: ui.Button):
         """Adiciona participante manualmente"""
         await interaction.response.send_message(
@@ -531,7 +541,7 @@ class ManagementPanelView(ui.View):
             ephemeral=True
         )
     
-    @ui.button(label="➖ Remover Participante", style=discord.ButtonStyle.primary, row=0)
+    @ui.button(label="➖ Remover Participante", style=discord.ButtonStyle.primary, row=1)
     async def remove_participant(self, interaction: discord.Interaction, button: ui.Button):
         """Remove participante manualmente"""
         action = self.action_service.get_action(self.action_id)
@@ -548,7 +558,7 @@ class ManagementPanelView(ui.View):
             ephemeral=True
         )
     
-    @ui.button(label="🔒 Fechar Escalação", style=discord.ButtonStyle.secondary, row=1)
+    @ui.button(label="🔒 Fechar Escalação", style=discord.ButtonStyle.secondary, row=2)
     async def close_action(self, interaction: discord.Interaction, button: ui.Button):
         """Fecha a escalação"""
         action = self.action_service.get_action(self.action_id)
@@ -573,7 +583,7 @@ class ManagementPanelView(ui.View):
             ephemeral=True
         )
     
-    @ui.button(label="🔓 Reabrir Ação", style=discord.ButtonStyle.secondary, row=1)
+    @ui.button(label="🔓 Reabrir Ação", style=discord.ButtonStyle.secondary, row=2)
     async def reopen_action(self, interaction: discord.Interaction, button: ui.Button):
         """Reabre a ação"""
         action = self.action_service.get_action(self.action_id)
@@ -621,7 +631,7 @@ class ManagementPanelView(ui.View):
                 ephemeral=True
             )
     
-    @ui.button(label="🏆 Definir Vitória", style=discord.ButtonStyle.success, row=2)
+    @ui.button(label="🏆 Definir Vitória", style=discord.ButtonStyle.success, row=3)
     async def set_victory(self, interaction: discord.Interaction, button: ui.Button):
         """Define resultado como vitória"""
         action = self.action_service.get_action(self.action_id)
@@ -661,7 +671,7 @@ class ManagementPanelView(ui.View):
                 ephemeral=True
             )
     
-    @ui.button(label="💀 Definir Derrota", style=discord.ButtonStyle.danger, row=2)
+    @ui.button(label="💀 Definir Derrota", style=discord.ButtonStyle.danger, row=3)
     async def set_defeat(self, interaction: discord.Interaction, button: ui.Button):
         """Define resultado como derrota"""
         action = self.action_service.get_action(self.action_id)
@@ -701,12 +711,307 @@ class ManagementPanelView(ui.View):
                 ephemeral=True
             )
     
-    @ui.button(label="🗑️ Apagar Ação", style=discord.ButtonStyle.danger, row=3)
+    @ui.button(label="🗑️ Apagar Ação", style=discord.ButtonStyle.danger, row=4)
     async def delete_action(self, interaction: discord.Interaction, button: ui.Button):
         """Apaga a ação completamente"""
         await interaction.response.send_message(
             "⚠️ **ATENÇÃO!** Tem certeza que deseja APAGAR esta ação? Esta operação não pode ser desfeita!",
             view=ConfirmDeleteView(self.bot, self.action_id),
+            ephemeral=True
+        )
+
+
+class ManageEscalatorView(ui.View):
+    """View para gerenciar o escalador"""
+    
+    def __init__(self, bot, action_id: str):
+        super().__init__(timeout=60)
+        self.bot = bot
+        self.action_id = action_id
+        self.action_service = bot.action_service
+        
+        action = self.action_service.get_action(action_id)
+        if action and action.escalator_id:
+            # Se tem escalador, oferece remover
+            remove_btn = ui.Button(label="❌ Remover Escalador", style=discord.ButtonStyle.danger)
+            remove_btn.callback = self.remove_escalator_callback
+            self.add_item(remove_btn)
+        
+        # Sempre oferece definir novo escalador
+        define_btn = ui.Button(label="✅ Definir Escalador", style=discord.ButtonStyle.success)
+        define_btn.callback = self.define_escalator_callback
+        self.add_item(define_btn)
+    
+    async def remove_escalator_callback(self, interaction: discord.Interaction):
+        """Remove o escalador atual"""
+        action = self.action_service.get_action(self.action_id)
+        if not action or not action.escalator_id:
+            await interaction.response.send_message(
+                embed=create_error_embed("Não há escalador para remover!"),
+                ephemeral=True
+            )
+            return
+        
+        # Remove escalador
+        action.escalator_id = None
+        self.action_service.save_active_actions()
+        self.action_service.save_to_history(action)
+        
+        # Atualiza mensagem
+        channel = interaction.guild.get_channel(action.channel_id)
+        if channel:
+            try:
+                message = await channel.fetch_message(action.message_id)
+                embed = create_action_embed(action, interaction.guild)
+                view = ActionView(self.bot, self.action_id)
+                await message.edit(embed=embed, view=view)
+            except:
+                pass
+        
+        await interaction.response.send_message(
+            embed=create_success_embed("Escalador removido!"),
+            ephemeral=True
+        )
+    
+    async def define_escalator_callback(self, interaction: discord.Interaction):
+        """Define novo escalador"""
+        await interaction.response.send_message(
+            "Selecione o novo escalador:",
+            view=DefineEscalatorView(self.bot, self.action_id),
+            ephemeral=True
+        )
+
+
+class DefineEscalatorView(ui.View):
+    """View para definir escalador"""
+    
+    def __init__(self, bot, action_id: str):
+        super().__init__(timeout=60)
+        self.bot = bot
+        self.action_id = action_id
+        self.action_service = bot.action_service
+        
+        # Adiciona UserSelect
+        user_select = ui.UserSelect(
+            placeholder="Selecione o escalador",
+            min_values=1,
+            max_values=1
+        )
+        user_select.callback = self.select_user_callback
+        self.add_item(user_select)
+    
+    async def select_user_callback(self, interaction: discord.Interaction):
+        select = [item for item in self.children if isinstance(item, ui.UserSelect)][0]
+        user = select.values[0]
+        
+        action = self.action_service.get_action(self.action_id)
+        if not action:
+            await interaction.response.send_message(
+                embed=create_error_embed("Ação não encontrada!"),
+                ephemeral=True
+            )
+            return
+        
+        # Define novo escalador
+        action.escalator_id = user.id
+        self.action_service.save_active_actions()
+        self.action_service.save_to_history(action)
+        
+        # Atualiza mensagem
+        channel = interaction.guild.get_channel(action.channel_id)
+        if channel:
+            try:
+                message = await channel.fetch_message(action.message_id)
+                embed = create_action_embed(action, interaction.guild)
+                view = ActionView(self.bot, self.action_id)
+                await message.edit(embed=embed, view=view)
+            except:
+                pass
+        
+        await interaction.response.send_message(
+            embed=create_success_embed(f"{user.mention} definido como escalador!"),
+            ephemeral=True
+        )
+
+
+class ManageCallsView(ui.View):
+    """View para gerenciar calls"""
+    
+    def __init__(self, bot, action_id: str):
+        super().__init__(timeout=60)
+        self.bot = bot
+        self.action_id = action_id
+        self.action_service = bot.action_service
+        
+        action = self.action_service.get_action(action_id)
+        if not action:
+            return
+        
+        # Botões para Call P1
+        if action.has_call_p1:
+            if action.call_p1_id:
+                remove_p1 = ui.Button(label="❌ Remover Call P1", style=discord.ButtonStyle.danger, row=0)
+                remove_p1.callback = self.remove_call_p1_callback
+                self.add_item(remove_p1)
+            
+            define_p1 = ui.Button(label="✅ Definir Call P1", style=discord.ButtonStyle.success, row=0)
+            define_p1.callback = self.define_call_p1_callback
+            self.add_item(define_p1)
+        
+        # Botões para Call P2
+        if action.has_call_p2:
+            if action.call_p2_id:
+                remove_p2 = ui.Button(label="❌ Remover Call P2", style=discord.ButtonStyle.danger, row=1)
+                remove_p2.callback = self.remove_call_p2_callback
+                self.add_item(remove_p2)
+            
+            define_p2 = ui.Button(label="✅ Definir Call P2", style=discord.ButtonStyle.success, row=1)
+            define_p2.callback = self.define_call_p2_callback
+            self.add_item(define_p2)
+    
+    async def remove_call_p1_callback(self, interaction: discord.Interaction):
+        action = self.action_service.get_action(self.action_id)
+        if not action or not action.call_p1_id:
+            await interaction.response.send_message(
+                embed=create_error_embed("Não há Call P1 para remover!"),
+                ephemeral=True
+            )
+            return
+        
+        action.call_p1_id = None
+        self.action_service.save_active_actions()
+        self.action_service.save_to_history(action)
+        
+        channel = interaction.guild.get_channel(action.channel_id)
+        if channel:
+            try:
+                message = await channel.fetch_message(action.message_id)
+                embed = create_action_embed(action, interaction.guild)
+                view = ActionView(self.bot, self.action_id)
+                await message.edit(embed=embed, view=view)
+            except:
+                pass
+        
+        await interaction.response.send_message(
+            embed=create_success_embed("Call P1 removido!"),
+            ephemeral=True
+        )
+    
+    async def remove_call_p2_callback(self, interaction: discord.Interaction):
+        action = self.action_service.get_action(self.action_id)
+        if not action or not action.call_p2_id:
+            await interaction.response.send_message(
+                embed=create_error_embed("Não há Call P2 para remover!"),
+                ephemeral=True
+            )
+            return
+        
+        action.call_p2_id = None
+        self.action_service.save_active_actions()
+        self.action_service.save_to_history(action)
+        
+        channel = interaction.guild.get_channel(action.channel_id)
+        if channel:
+            try:
+                message = await channel.fetch_message(action.message_id)
+                embed = create_action_embed(action, interaction.guild)
+                view = ActionView(self.bot, self.action_id)
+                await message.edit(embed=embed, view=view)
+            except:
+                pass
+        
+        await interaction.response.send_message(
+            embed=create_success_embed("Call P2 removido!"),
+            ephemeral=True
+        )
+    
+    async def define_call_p1_callback(self, interaction: discord.Interaction):
+        await interaction.response.send_message(
+            "Selecione o Call P1:",
+            view=DefineCallP1View(self.bot, self.action_id),
+            ephemeral=True
+        )
+    
+    async def define_call_p2_callback(self, interaction: discord.Interaction):
+        await interaction.response.send_message(
+            "Selecione o Call P2:",
+            view=DefineCallP2View(self.bot, self.action_id),
+            ephemeral=True
+        )
+
+
+class DefineCallP1View(ui.View):
+    """View para definir Call P1"""
+    
+    def __init__(self, bot, action_id: str):
+        super().__init__(timeout=60)
+        self.bot = bot
+        self.action_id = action_id
+        self.action_service = bot.action_service
+        
+        user_select = ui.UserSelect(placeholder="Selecione o Call P1", min_values=1, max_values=1)
+        user_select.callback = self.select_callback
+        self.add_item(user_select)
+    
+    async def select_callback(self, interaction: discord.Interaction):
+        select = [item for item in self.children if isinstance(item, ui.UserSelect)][0]
+        user = select.values[0]
+        
+        action = self.action_service.get_action(self.action_id)
+        action.call_p1_id = user.id
+        self.action_service.save_active_actions()
+        self.action_service.save_to_history(action)
+        
+        channel = interaction.guild.get_channel(action.channel_id)
+        if channel:
+            try:
+                message = await channel.fetch_message(action.message_id)
+                embed = create_action_embed(action, interaction.guild)
+                view = ActionView(self.bot, self.action_id)
+                await message.edit(embed=embed, view=view)
+            except:
+                pass
+        
+        await interaction.response.send_message(
+            embed=create_success_embed(f"{user.mention} definido como Call P1!"),
+            ephemeral=True
+        )
+
+
+class DefineCallP2View(ui.View):
+    """View para definir Call P2"""
+    
+    def __init__(self, bot, action_id: str):
+        super().__init__(timeout=60)
+        self.bot = bot
+        self.action_id = action_id
+        self.action_service = bot.action_service
+        
+        user_select = ui.UserSelect(placeholder="Selecione o Call P2", min_values=1, max_values=1)
+        user_select.callback = self.select_callback
+        self.add_item(user_select)
+    
+    async def select_callback(self, interaction: discord.Interaction):
+        select = [item for item in self.children if isinstance(item, ui.UserSelect)][0]
+        user = select.values[0]
+        
+        action = self.action_service.get_action(self.action_id)
+        action.call_p2_id = user.id
+        self.action_service.save_active_actions()
+        self.action_service.save_to_history(action)
+        
+        channel = interaction.guild.get_channel(action.channel_id)
+        if channel:
+            try:
+                message = await channel.fetch_message(action.message_id)
+                embed = create_action_embed(action, interaction.guild)
+                view = ActionView(self.bot, self.action_id)
+                await message.edit(embed=embed, view=view)
+            except:
+                pass
+        
+        await interaction.response.send_message(
+            embed=create_success_embed(f"{user.mention} definido como Call P2!"),
             ephemeral=True
         )
 
@@ -733,14 +1038,6 @@ class AddParticipantView(ui.View):
         # Pega o select do componente
         select = [item for item in self.children if isinstance(item, ui.UserSelect)][0]
         user = select.values[0]
-        
-        # Verifica se é bot
-        if user.bot:
-            await interaction.response.send_message(
-                embed=create_error_embed("Não é possível adicionar bots!"),
-                ephemeral=True
-            )
-            return
         
         success = await self.action_service.add_participant(self.action_id, user.id)
         if success:

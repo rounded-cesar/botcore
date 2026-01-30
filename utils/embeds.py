@@ -112,13 +112,11 @@ def create_action_embed(action: ActionData, guild: discord.Guild) -> discord.Emb
         embed.add_field(name="📞 Call", value=call_text, inline=True)
     
     # Participantes
-    participants_text = f"{len(action.participant_ids)}/{action.max_participants}"
+    participants_text = f"**{len(action.participant_ids)}/{action.max_participants}**"
     if action.participant_ids:
-        # Limita a 10 menções para não poluir o embed
-        mentions = [f"<@{uid}>" for uid in action.participant_ids[:10]]
-        if len(action.participant_ids) > 10:
-            mentions.append(f"... e mais {len(action.participant_ids) - 10}")
-        participants_text += f"\n{' '.join(mentions)}"
+        # Mostra TODOS os participantes, separados por quebra de linha
+        participants_list = "\n".join([f"<@{uid}>" for uid in action.participant_ids])
+        participants_text += f"\n{participants_list}"
     
     embed.add_field(name="👥 Participantes", value=participants_text, inline=False)
     
