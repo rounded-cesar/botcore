@@ -1,0 +1,29 @@
+{
+  "1415780627185406086": {
+    "action_channel": 1415780631752740865,
+    "escalation_channel": 1415780630712815750,
+    "report_channel": 1415780630712815753,
+    "escalation_roles": [
+      1415780627684266163
+    ],
+    "admin_roles": [
+      1415780627868811292,
+      1415780627944444129,
+      1460451443373768724,
+      1415780627944444127
+    ],
+    "inactivity_hours": 24,
+    "warning_hours": 20,
+    "auto_close_hours": null
+  },
+  "1455303640964141281": {
+    "action_channel": null,
+    "escalation_channel": null,
+    "report_channel": null,
+    "escalation_roles": [],
+    "admin_roles": [],
+    "inactivity_hours": 24,
+    "warning_hours": 20,
+    "auto_close_hours": null
+  }
+}
